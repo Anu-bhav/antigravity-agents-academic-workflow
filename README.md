@@ -5,55 +5,97 @@
 This repository contains a modular system of "skills" designed to automate, streamline, and standardize the process of high-level academic research. It is built to operate with agentic AI workflows but provides standalone Python tools for rigorous document processing.
 
 ## 🎯 Core Focus: Finance & AI
-This project is optimized for research in:
-- **Artificial Intelligence** (Transformers, LLMs, RL)
-- **Quantitative Finance** (Algorithmic Trading, Market Microstructure)
-- **Asset Pricing & Risk Management**
+*   **British English**: All outputs are strictly in formal British English.
+*   **Harvard Citations**: Strict adherence to Harvard formatting.
+*   **Source Quality**: Prioritizes Q1/Q2 Peer-Reviewed Journals.
 
-### 🇬🇧 Standardization
-*   **British English**: All outputs are strictly in formal British English (e.g., *analyse*, *behaviour*, *modelling*).
-*   **Harvard Citations**: Strict adherence to Harvard formatting for citations and references.
-*   **Source Quality**: Prioritizes Q1/Q2 Peer-Reviewed Journals and high-impact ArXiv preprints.
-
-> **Customization**: To change these defaults (e.g., to US English or APA style), edit the **Single Source of Truth** file: [`skills/academic-standards/SKILL.md`](skills/academic-standards/SKILL.md).
+> **Customization**: Edit [`skills/academic-standards/SKILL.md`](skills/academic-standards/SKILL.md).
 
 ---
 
-## 🔄 Workflow & Integration
+## � Scenario-Based Usage Guides
 
-### System Architecture
+Choose the workflow that matches your current goal.
 
-```mermaid
-graph TD
-    %% Nodes
-    Plan[("📝 Planning<br>(planning-with-files)")]
-    Standards[("⚖️ Academic Standards<br>(Rules Engine)")]
-    Search[("🔍 Retrieval<br>(literature-review)")]
-    Analyze[("🧠 Analysis<br>(web-research / Download)")]
-    Synth[("🤖 Synthesis<br>(notebooklm-skill)")]
-    Write[("✍️ Writing<br>(academic-writing)")]
-    Output[("📄 Latex Output<br>(latex-manual)")]
+### 🔍 Situation 1: "I need to find papers on a topic"
+**Goal**: Rapidly gather high-quality sources without reading everything.
 
-    %% Styles
-    style Standards fill:#f9f,stroke:#333,stroke-width:4px
-    style Synth fill:#ff9,stroke:#333,stroke-width:2px
+1.  **Search & Retrieve**:
+    ```bash
+    # Check Unpaywall, Google Scholar, and Archives
+    python skills/literature-review/scripts/retrieve_paper.py "FlashAttention mechanisms"
+    ```
+2.  **Download Specific Paper**:
+    ```bash
+    # Downloads and auto-renames to "Author et al. - Year - Title.pdf"
+    python skills/literature-review/scripts/download_paper.py "https://arxiv.org/pdf/2205.14135" --author "Dao" --year "2022" --title "FlashAttention"
+    ```
+3.  **Find Related Work**:
+    *   Use `traversing-citations` to find what papers cite this one.
 
-    %% Flow
-    Plan --> Search
-    Search --> Analyze
-    Analyze --> Synth
-    Synth --> Write
-    Write --> Output
+---
 
-    %% Guidance
-    Standards -.-o Plan
-    Standards -.-o Write
-    Standards -.-o Search
+### � Situation 2: "I need to understand complex papers"
+**Goal**: Deep synthesis and Q&A over difficult technical documents.
+
+1.  **Setup NotebookLM**:
+    ```bash
+    # Opens browser for one-time Google login
+    python skills/notebooklm-skill/scripts/run.py auth_manager.py setup
+    ```
+2.  **Upload & Query**:
+    *   Use the `notebooklm-skill` to upload your downloaded PDFs.
+    *   Run query:
+        ```bash
+        python skills/notebooklm-skill/scripts/run.py ask_question.py --question "Explain the memory complexity reduction in simple terms"
+        ```
+
+---
+
+### 📝 Situation 3: "I am writing a paper"
+**Goal**: Produce a manuscript that meets strict academic standards.
+
+1.  **Drafting**:
+    *   Consult `skills/academic-standards/SKILL.md` for required phrases and formatting.
+2.  **Citation Management**:
+    *   Ensure all references are in your `.bib` file.
+3.  **Compilation**:
+    ```bash
+    # Compiles LaTeX to PDF
+    python skills/latex-manual/scripts/compile_latex.py main.tex
+    ```
+
+---
+
+### � Situation 4: "I want the Full Research Lifecycle"
+**Goal**: From idea to final PDF.
+
+1.  **Initialize**: `python skills/planning-with-files/scripts/init_session.py` (Creates `task_plan.md`)
+2.  **Retrieve**: Run `retrieve_paper.py` to populate your reading list.
+3.  **Analyze**: Use `download_paper.py` to get texts.
+4.  **Synthesize**: Summarize findings in `findings.md`.
+5.  **Write**: Draft in LaTeX using `academic-writing` templates.
+6.  **Verify**: Run `check_complete.py task_plan.md`.
+
+---
+
+## 🛠️ Tool Usage & Setup
+
+### Prerequisites
+*   Python 3.10+
+*   `uv` (dependency manager)
+
+### Quick Start
+```bash
+# 1. Create Environment
+uv venv .venv
+.venv\Scripts\activate
+
+# 2. Install Dependencies
+uv pip install -r requirements.txt
 ```
 
-### 🧩 Tool Integration Matrix
-
-This table shows which skills are designed to work together directly.
+### 🔄 Tool Integration Matrix
 
 | Primary Skill | Integrates With | Purpose |
 | :--- | :--- | :--- |
@@ -62,77 +104,24 @@ This table shows which skills are designed to work together directly.
 | **academic-writing** | `academic-standards` | Enforce British English and Harvard Citation style. |
 | **academic-writing** | `latex-manual` | Convert drafts into formatted PDF manuscripts. |
 | **web-research** | `browser_subagent` | Navigate complex/JS-heavy financial dashboards. |
-
-### 📝 Detailed Step-by-Step Workflow
-
-1.  **Planning** (`planning-with-files`):
-    - Initialize a session: `python skills/planning-with-files/scripts/init_session.py`
-    - Creates `task_plan.md` to track progress.
-
-2.  **Retrieval** (`literature-review`):
-    - Find papers: `python skills/literature-review/scripts/retrieve_paper.py "Paper Title"`
-    - Checks Unpaywall, Google Scholar, and Anna's Archive.
-
-3.  **Acquisition & Analysis** (`literature-review`):
-    - **Online**: AI Agent browses and reads abstracts/PDFs.
-    - **Offline**: Download & Parse:
-        ```bash
-        python skills/literature-review/scripts/download_paper.py "URL" --author "Author" --year "2024" --title "Title"
-        ```
-        - Automatically names files: `Author et al. - Year - Title.pdf`.
-        - Extracts text immediately for synthesis.
-
-4.  **Synthesis** (`notebooklm-skill`):
-    - Uploads complex documents to Google NotebookLM for deep interrogation.
-    - Run: `python skills/notebooklm-skill/scripts/run.py ...`
-
-5.  **Writing** (`academic-writing` & `latex-manual`):
-    - Draft content following `academic-standards`.
-    - Compile LaTeX: `python skills/latex-manual/scripts/compile_latex.py main.tex`
+| **traversing-citations** | `literature-review` | Find forward/backward references for a key paper. |
 
 ---
 
-## 🛠️ Tool Usage
+## 🔄 System Visual
 
-### Prerequisites
-*   Python 3.10+
-*   `uv` (for dependency management)
-*   Google Chrome (for NotebookLM)
+```mermaid
+graph TD
+    %% Nodes
+    Plan[("📝 Planning")]
+    Search[("🔍 Retrieval")]
+    Analyze[("🧠 Analysis")]
+    Synth[("🤖 Synthesis")]
+    Write[("✍️ Writing")]
 
-### Setup
-```bash
-# Create and activate environment
-uv venv .venv
-.venv\Scripts\activate
-
-# Install dependencies
-uv pip install -r requirements.txt
+    %% Flow
+    Plan -->|Define Topic| Search
+    Search -->|Found Papers| Analyze
+    Analyze -->|Extracted Text| Synth
+    Synth -->|Key Insights| Write
 ```
-
-### Key Scripts
-
-| Task | Command |
-|------|---------|
-| **Retrieve Paper** | `python skills/literature-review/scripts/retrieve_paper.py "Title"` |
-| **Download PDF** | `python skills/literature-review/scripts/download_paper.py "URL" --author "Name" ...` |
-| **Check Progress**| `python skills/planning-with-files/scripts/check_complete.py task_plan.md` |
-| **NotebookLM** | `python skills/notebooklm-skill/scripts/run.py auth_manager.py setup` |
-
----
-
-## 📁 Repository Structure
-
-*   `skills/academic-standards/`: **Rules engine** for style and quality.
-*   `skills/literature-review/`: Tools for finding and analyzing papers.
-*   `skills/notebooklm-skill/`: AI-powered deep synthesis.
-*   `skills/planning-with-files/`: Session management and tracking.
-*   `skills/latex-manual/`: LaTeX compilation and bibtex tools.
-*   `skills/web-research/`: Browser-based research navigation.
-
----
-
-## 🔄 Integration
-
-This system is designed to work with AI Agents.
-- **Agents** read `SKILL.md` in each directory to understand capabilities.
-- **Humans** use the Python scripts for reliable, reproducible actions.
