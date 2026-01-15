@@ -19,9 +19,51 @@ This project is optimized for research in:
 
 ---
 
-## 🚀 Workflow
+## 🔄 Workflow & Integration
 
-The system follows a strict pipeline:
+### System Architecture
+
+```mermaid
+graph TD
+    %% Nodes
+    Plan[("📝 Planning<br>(planning-with-files)")]
+    Standards[("⚖️ Academic Standards<br>(Rules Engine)")]
+    Search[("🔍 Retrieval<br>(literature-review)")]
+    Analyze[("🧠 Analysis<br>(web-research / Download)")]
+    Synth[("🤖 Synthesis<br>(notebooklm-skill)")]
+    Write[("✍️ Writing<br>(academic-writing)")]
+    Output[("📄 Latex Output<br>(latex-manual)")]
+
+    %% Styles
+    style Standards fill:#f9f,stroke:#333,stroke-width:4px
+    style Synth fill:#ff9,stroke:#333,stroke-width:2px
+
+    %% Flow
+    Plan --> Search
+    Search --> Analyze
+    Analyze --> Synth
+    Synth --> Write
+    Write --> Output
+
+    %% Guidance
+    Standards -.-o Plan
+    Standards -.-o Write
+    Standards -.-o Search
+```
+
+### 🧩 Tool Integration Matrix
+
+This table shows which skills are designed to work together directly.
+
+| Primary Skill | Integrates With | Purpose |
+| :--- | :--- | :--- |
+| **literature-review** | `notebooklm-skill` | Send retrieved PDFs for deep Q&A / Synthesis. |
+| **literature-review** | `web-research` | Verify paper claims via live browser search. |
+| **academic-writing** | `academic-standards` | Enforce British English and Harvard Citation style. |
+| **academic-writing** | `latex-manual` | Convert drafts into formatted PDF manuscripts. |
+| **web-research** | `browser_subagent` | Navigate complex/JS-heavy financial dashboards. |
+
+### 📝 Detailed Step-by-Step Workflow
 
 1.  **Planning** (`planning-with-files`):
     - Initialize a session: `python skills/planning-with-files/scripts/init_session.py`
